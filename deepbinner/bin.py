@@ -113,6 +113,8 @@ def write_read_files(reads_filename, classifications, out_filenames, input_type)
     out_files = {}
     for class_name, out_file in out_filenames.items():
         out_files[class_name] = open(out_file, 'wt')
+    # HotFix: add a outfile/class_name for reads that are "not found" in classifications (see KeyError a bit down) and issue #11
+    out_files['not found'] = open("unfindables.txt", 'wt')
 
     count, interval = 0, random.randint(90, 110)
     with open_func(reads_filename, 'rt') as reads:
@@ -190,7 +192,7 @@ def print_summary_and_zip(bin_counts, out_filenames):
         gzip = 'gzip'
         print('Gzipping reads:')
     print('  Barcode       Reads     File')
-    class_names = out_filenames.keys()
+    class_names = list(out_filenames.keys()) # Relates to HotFix, this wasn't working because of "'odict_keys' object has no attribute 'append'"
     if 'not found' in bin_counts:
         class_names.append('not found')
     for class_name in class_names:
